@@ -2,3 +2,10 @@ name: FunctionalItems
 version: '0.1'
 main: dev.onebiteaidan.functionalItems.FunctionalItems
 api-version: '1.21'
+
+commands:
+  functionalitems:
+    aliases:
+      - fi
+      - funci
+      - funcitems

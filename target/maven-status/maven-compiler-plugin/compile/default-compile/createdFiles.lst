@@ -1,4 +1,7 @@
-dev\onebiteaidan\functionalItems\ActionBarManager.class
-dev\onebiteaidan\functionalItems\ClockManager.class
+dev\onebiteaidan\functionalItems\ActionBar\ActionBarConfigGUI.class
 dev\onebiteaidan\functionalItems\FunctionalItems.class
-dev\onebiteaidan\functionalItems\CompassManager.class
+dev\onebiteaidan\functionalItems\Commands\FunctionalItemsCommand.class
+dev\onebiteaidan\functionalItems\Items\ClockManager.class
+dev\onebiteaidan\functionalItems\Items\CompassManager.class
+dev\onebiteaidan\functionalItems\ActionBar\ActionBarManager.class
+dev\onebiteaidan\functionalItems\ActionBar\PlayerActionBarConfig.class
