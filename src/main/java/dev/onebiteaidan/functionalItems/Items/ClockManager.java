@@ -1,28 +1,47 @@
 package dev.onebiteaidan.functionalItems.Items;
 
 import dev.onebiteaidan.functionalItems.ActionBar.ActionBarManager;
+import dev.onebiteaidan.functionalItems.Events.DayChangeEvent;
+import dev.onebiteaidan.functionalItems.Events.WeekChangeEvent;
+import dev.onebiteaidan.functionalItems.FunctionalItems;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ClockManager {
 
-
-    Map<Player, Integer> players = new HashMap<>();
-    long initialTime;
-    long timeInDays;
+    int currentDay;
 
     public ClockManager(World world) {
-        this.initialTime = world.getFullTime();
-        this.timeInDays = 0;
+        this.currentDay = (int) (((world.getFullTime()) / 24000) % 7);
 
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(FunctionalItems.getInstance(), () -> {
+
+            int day = (int) (((world.getFullTime() + 6000) / 24000) % 7);
+
+            // Check for a day change
+            if (this.currentDay != day) {
+                // New DayChangeEvent
+                DayChangeEvent event = new DayChangeEvent();
+                Bukkit.getPluginManager().callEvent(event);
+            }
+
+            // Check for week change
+            if (this.currentDay == 6) {
+                if (day == 0) {
+                    // New WeekChangeEvent
+                    WeekChangeEvent event = new WeekChangeEvent();
+                    Bukkit.getPluginManager().callEvent(event);
+                }
+            }
+
+            this.currentDay = day;
+        }, 0L, 5L);
     }
 
     public void updateClock(Player player) {
         ActionBarManager.addSource(player, "clockDay", () -> {
-            long day = ((player.getWorld().getFullTime()) / 24000) % 7;
+            long day = ((player.getWorld().getFullTime() + 6000) / 24000) % 7; // The plus 6000 is because the minecraft world starts at 6AM (6000). Without this, the day value updates at dawn (6am) rather than midnight
 
             return switch ((int) day) {
                 case 0 -> "Sun";
@@ -53,4 +72,6 @@ public class ClockManager {
 
         return String.format("%02d:%02d", hours, minutes); // Pads with zeroes
     }
+
+
 }

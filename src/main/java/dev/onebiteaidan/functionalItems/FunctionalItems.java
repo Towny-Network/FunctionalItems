@@ -2,15 +2,20 @@ package dev.onebiteaidan.functionalItems;
 
 import dev.onebiteaidan.functionalItems.ActionBar.ActionBarConfigGUI;
 import dev.onebiteaidan.functionalItems.Commands.FunctionalItemsCommand;
+import dev.onebiteaidan.functionalItems.Events.DayChangeEvent;
+import dev.onebiteaidan.functionalItems.Events.WeekChangeEvent;
 import dev.onebiteaidan.functionalItems.Items.ClockManager;
 import dev.onebiteaidan.functionalItems.Items.CompassManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Random;
 
 public final class FunctionalItems extends JavaPlugin implements Listener {
 
@@ -50,6 +55,20 @@ public final class FunctionalItems extends JavaPlugin implements Listener {
         else compassManager.removeCompass(player);
     }
 
+
+    @EventHandler
+    public void onWeekChange(WeekChangeEvent event) {
+        Random random = new Random();
+        Difficulty[] difficulties = Difficulty.values();
+        Difficulty difficulty = difficulties[random.nextInt(difficulties.length)];
+        this.getServer().getWorlds().getFirst().setDifficulty(difficulty);
+
+        this.getLogger().info("The server difficulty was changed to: " + difficulty);
+
+        for (Player player : this.getServer().getOnlinePlayers()) {
+            player.sendMessage("The server difficulty was changed to: " + difficulty);
+        }
+    }
 
     @Override
     public void onDisable() {
