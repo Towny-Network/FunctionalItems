@@ -1,12 +1,9 @@
 package dev.onebiteaidan.functionalItems.ActionBar;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerActionBarConfig {
-    private final Map<String, Boolean> componentStates = new LinkedHashMap<>(); // Stores component order & enabled state
+    private final LinkedHashMap<String, Boolean> componentStates = new LinkedHashMap<>(); // Stores component order & enabled state
 
     public void addComponent(String key) {
         componentStates.putIfAbsent(key, true); // Default to enabled
@@ -22,62 +19,27 @@ public class PlayerActionBarConfig {
         return componentStates.getOrDefault(key, false);
     }
 
-    public void reorderComponent(String movingKey, int newPos) {
-        String[] keys = componentStates.keySet().toArray(new String[0]);
-        // Remove and reinsert in new position
-        componentStates.remove(movingKey);
-        Map<String, Boolean> reordered = new LinkedHashMap<>();
-        int index = 0;
-        for (String key : keys) {
-            if (index == newPos) reordered.put(movingKey, componentStates.get(movingKey));
-            reordered.put(key, componentStates.get(key));
-            index++;
-        }
-        componentStates.clear();
-        componentStates.putAll(reordered);
-    }
-
-    public void reorderComponent(int oldPos, int newPos) {
-        if (oldPos < 0 || newPos < 0 || oldPos >= componentStates.size() || newPos >= componentStates.size()) return;
-
-        String[] keys = componentStates.keySet().toArray(new String[0]);
-        String movingKey = keys[oldPos];
-
-        // Remove and reinsert in new position
-        componentStates.remove(movingKey);
-        Map<String, Boolean> reordered = new LinkedHashMap<>();
-        int index = 0;
-        for (String key : keys) {
-            if (index == newPos) reordered.put(movingKey, componentStates.get(movingKey));
-            reordered.put(key, componentStates.get(key));
-            index++;
-        }
-        componentStates.clear();
-        componentStates.putAll(reordered);
-    }
-
-    public String getComponentAtIndex(int index) {
-        return componentStates.keySet().toArray(new String[0])[index];
-    }
-
-    public Map<String, Boolean> getComponentStates() {
+    public LinkedHashMap<String, Boolean> getComponentStates() {
         return componentStates;
     }
 
-    public List<String> getEnabledComponents() {
-        List<String> keys = new ArrayList<>();
-        for (String key : componentStates.keySet()) {
-            if (componentStates.get(key)) {
-                keys.add(key);
-            }
-        }
-        return keys;
+    public LinkedList<String> getEnabledComponents() {
+        return new LinkedList<>(componentStates.entrySet().stream()
+                .filter(Map.Entry::getValue) // Keep only entries where value is true
+                .map(Map.Entry::getKey)     // Extract the keys
+                .toList());
     }
 
-    public String buildActionBar() {
-        return componentStates.entrySet().stream()
-                .filter(Map.Entry::getValue) // Only include enabled components
-                .map(Map.Entry::getKey)
-                .reduce((a, b) -> a + " | " + b).orElse("");
+    public void reorderKeys(List<String> keys) {
+        LinkedHashMap<String, Boolean> componentStatesReordered = new LinkedHashMap<>();
+
+        for (String key : keys) {
+            componentStatesReordered.put(key, componentStates.get(key));
+        }
+        this.componentStates.clear();
+
+        for (Map.Entry<String, Boolean> entry : componentStatesReordered.sequencedEntrySet()) {
+            this.componentStates.put(entry.getKey(), entry.getValue());
+        }
     }
 }

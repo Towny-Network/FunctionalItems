@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class ActionBarConfigGUI implements Listener {
     private static ItemStack createItem(String key, boolean enabled) {
         ItemStack item = new ItemStack(enabled ? ENABLED_ITEM : DISABLED_ITEM);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§6" + key);
+        meta.setDisplayName(key);
         meta.setLore(List.of(
                 "§7Status: " + (enabled ? "§aEnabled" : "§cDisabled"),
                 "§eRight-click to toggle",
@@ -71,7 +72,24 @@ public class ActionBarConfigGUI implements Listener {
                 event.getClickedInventory().setItem(event.getSlot(), createItem(key, newState));
             }
         } else if (event.getClick() == ClickType.LEFT) {
-            event.setCancelled(true);
+//            event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) return;
+        if (!event.getView().getTitle().equals(GUI_TITLE)) return;
+
+        LinkedList<String> keys = new LinkedList<>();
+
+        for (ItemStack item : event.getInventory()) {
+            if (item != null) {
+                keys.add(item.getItemMeta().getDisplayName());
+            }
+        }
+
+        PlayerActionBarConfig config = ActionBarManager.getPlayerConfig(player);
+        config.reorderKeys(keys);
     }
 }

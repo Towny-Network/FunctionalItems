@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class ActionBarManager {
     private static final Map<Player, Integer> taskMap = new HashMap<>();
@@ -40,25 +39,27 @@ public class ActionBarManager {
     private static void startTask(Player player) {
         if (taskMap.containsKey(player)) return;
 
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                FunctionalItems.getPlugin(FunctionalItems.class),
-                () -> {
-                    PlayerActionBarConfig config = playerConfigs.get(player);
-                    Map<String, Supplier<String>> sources = dataSources.get(player);
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(FunctionalItems.getInstance(), () -> {
+            PlayerActionBarConfig config = playerConfigs.get(player);
+            Map<String, Supplier<String>> sources = dataSources.get(player);
 
-                    if (config == null || sources == null) return;
+            if (config == null || sources == null) return;
 
-                    // Get values from enabled components by calling their respective Supplier<String>
-                    String actionBarText = config.getEnabledComponents().stream()
-                            .map(sources::get) // Get the supplier for each enabled component
-                            .filter(java.util.Objects::nonNull) // Ensure no null values
-                            .map(Supplier::get) // Call the supplier to get the actual value
-                            .collect(Collectors.joining(" | ")); // Join values with " | "
+            StringBuilder actionBarText = new StringBuilder();
 
-                    player.sendActionBar(Component.text(actionBarText));
-                },
-                0L, 5L // Update every 5 ticks
-        );
+            for (String key : config.getEnabledComponents()) {
+                if (!actionBarText.isEmpty()) {
+                    actionBarText.append(" | ");
+                }
+
+                Supplier<String> supplier = sources.get(key);
+                actionBarText.append(supplier.get());
+            }
+
+            player.sendActionBar(Component.text(actionBarText.toString()));
+
+        },0L, 5L); // Update every 5 ticks
+
         taskMap.put(player, taskId);
     }
 
