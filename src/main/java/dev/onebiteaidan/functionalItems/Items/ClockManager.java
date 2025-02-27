@@ -25,13 +25,13 @@ public class ClockManager {
             long day = ((player.getWorld().getFullTime()) / 24000) % 7;
 
             return switch ((int) day) {
-                case 0 -> "Monday";
-                case 1 -> "Chewsday";
-                case 2 -> "Wednesday";
-                case 3 -> "Trusday";
-                case 4 -> "Froiday";
-                case 5 -> "Saturday";
-                case 6 -> "Sonfdsu";
+                case 0 -> "Sun";
+                case 1 -> "Mon";
+                case 2 -> "Tues";
+                case 3 -> "Wed";
+                case 4 -> "Thurs";
+                case 5 -> "Fri";
+                case 6 -> "Sat";
                 default -> "UH OH";
             };
         });
