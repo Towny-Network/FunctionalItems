@@ -1,10 +1,9 @@
 package dev.onebiteaidan.functionalItems.ActionBar;
 
-import dev.onebiteaidan.functionalItems.FunctionalItems;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,11 +40,11 @@ public class ActionBarConfigGUI implements Listener {
     private static ItemStack createItem(String key, boolean enabled) {
         ItemStack item = new ItemStack(enabled ? ENABLED_ITEM : DISABLED_ITEM);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(key);
-        meta.setLore(List.of(
-                "§7Status: " + (enabled ? "§aEnabled" : "§cDisabled"),
-                "§eRight-click to toggle",
-                "§eDrag to reorder"
+        meta.displayName(Component.text(key));
+        meta.lore(List.of(
+                Component.text("Status: ").color(NamedTextColor.GRAY).append(enabled ? Component.text("Enabled").color(NamedTextColor.GREEN) : Component.text("Disabled").color(NamedTextColor.RED)),
+                Component.text("Right-click to toggle").color(NamedTextColor.YELLOW),
+                        Component.text("§eDrag to reorder").color(NamedTextColor.YELLOW)
         ));
         item.setItemMeta(meta);
         return item;
